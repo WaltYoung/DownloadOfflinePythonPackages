@@ -50,13 +50,48 @@ jobs:
           pip download -d offline_packages pip setuptools wheel
           pip download -d offline_packages ${{ github.event.inputs.packages }}
 
+      - name: Generate installation script
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]] || [[ "${{ runner.os }}" == "macOS" ]]; then
+            cat > offline_packages/install.sh << 'EOF'
+            #!/bin/bash
+            # 离线安装脚本 - 适用于 Linux / macOS
+            set -e
+            echo "=== 正在离线安装 pip ==="
+            python3 get-pip.py --no-index --find-links=.
+            echo "=== 正在离线安装所需依赖包 ==="
+            pip3 install --no-index --find-links=. ${{ github.event.inputs.packages }}
+            echo "=== 安装完成 ==="
+            EOF
+            chmod +x offline_packages/install.sh
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            cat > offline_packages/install.bat << 'EOF'
+            @echo off
+            echo === 正在离线安装 pip ===
+            python get-pip.py --no-index --find-links=.
+            echo === 正在离线安装所需依赖包 ===
+            pip install --no-index --find-links=. ${{ github.event.inputs.packages }}
+            echo === 安装完成 ===
+            EOF
+          fi
+        shell: bash
+
       - name: List downloaded files
         run: ls -la offline_packages
+        shell: bash
+
+      - name: Create offline_packages.zip
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            powershell -Command "Compress-Archive -Path offline_packages -DestinationPath offline_packages.zip"
+          else
+            zip -r offline_packages.zip offline_packages
+          fi
         shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: offline-packages-py${{ github.event.inputs.python_version }}-${{ runner.os }}
-          path: offline_packages
+          path: offline_packages.zip
           if-no-files-found: error
