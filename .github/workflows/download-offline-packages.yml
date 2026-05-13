@@ -53,7 +53,7 @@ jobs:
       - name: Generate installation script
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]] || [[ "${{ runner.os }}" == "macOS" ]]; then
-            cat > offline_packages/install.sh << 'EOF'
+            cat > offline_packages/install.sh <<EOF
             #!/bin/bash
             # 离线安装脚本 - 适用于 Linux / macOS
             set -e
@@ -65,7 +65,7 @@ jobs:
             EOF
             chmod +x offline_packages/install.sh
           elif [[ "${{ runner.os }}" == "Windows" ]]; then
-            cat > offline_packages/install.bat << 'EOF'
+            cat > offline_packages/install.bat <<EOF
             @echo off
             echo === 正在离线安装 pip ===
             python get-pip.py --no-index --find-links=.
