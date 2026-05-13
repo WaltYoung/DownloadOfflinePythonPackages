@@ -40,6 +40,7 @@ jobs:
       - name: Download packages and dependencies
         run: |
           mkdir offline_packages
+          pip download -d offline_packages pip setuptools wheel
           pip download -d offline_packages ${{ github.event.inputs.packages }}
 
       - name: List downloaded files
