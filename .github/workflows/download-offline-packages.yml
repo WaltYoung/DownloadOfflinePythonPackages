@@ -37,9 +37,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
+      - name: Create directory
+        run: mkdir offline_packages
+
+      - name: Download get-pip.py
+        run: |
+          curl -o offline_packages/get-pip.py https://bootstrap.pypa.io/get-pip.py
+        shell: bash
+
       - name: Download packages and dependencies
         run: |
-          mkdir offline_packages
           pip download -d offline_packages pip setuptools wheel
           pip download -d offline_packages ${{ github.event.inputs.packages }}
 
