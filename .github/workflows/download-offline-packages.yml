@@ -78,18 +78,9 @@ jobs:
         run: ls -la offline_packages
         shell: bash
 
-      - name: Create offline_packages.zip
-        run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            powershell -Command "Compress-Archive -Path offline_packages -DestinationPath offline_packages.zip"
-          else
-            zip -r offline_packages.zip offline_packages
-          fi
-        shell: bash
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: offline-packages-py${{ github.event.inputs.python_version }}-${{ runner.os }}
-          path: offline_packages.zip
+          path: offline_packages
           if-no-files-found: error
