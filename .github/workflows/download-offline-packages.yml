@@ -53,26 +53,24 @@ jobs:
       - name: Generate installation script
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]] || [[ "${{ runner.os }}" == "macOS" ]]; then
-            cat > offline_packages/install.sh <<EOF
-            #!/bin/bash
-            # 离线安装脚本 - 适用于 Linux / macOS
-            set -e
-            echo "=== 正在离线安装 pip ==="
-            python3 get-pip.py --no-index --find-links=.
-            echo "=== 正在离线安装所需依赖包 ==="
-            pip3 install --no-index --find-links=. ${{ github.event.inputs.packages }}
-            echo "=== 安装完成 ==="
-            EOF
+            # 创建 install.sh
+            echo '#!/bin/bash' > offline_packages/install.sh
+            echo '# 离线安装脚本 - 适用于 Linux / macOS' >> offline_packages/install.sh
+            echo 'set -e' >> offline_packages/install.sh
+            echo 'echo "=== 正在离线安装 pip ==="' >> offline_packages/install.sh
+            echo 'python3 get-pip.py --no-index --find-links=.' >> offline_packages/install.sh
+            echo 'echo "=== 正在离线安装所需依赖包 ==="' >> offline_packages/install.sh
+            echo "pip3 install --no-index --find-links=. ${{ github.event.inputs.packages }}" >> offline_packages/install.sh
+            echo 'echo "=== 安装完成 ==="' >> offline_packages/install.sh
             chmod +x offline_packages/install.sh
           elif [[ "${{ runner.os }}" == "Windows" ]]; then
-            cat > offline_packages/install.bat <<EOF
-            @echo off
-            echo === 正在离线安装 pip ===
-            python get-pip.py --no-index --find-links=.
-            echo === 正在离线安装所需依赖包 ===
-            pip install --no-index --find-links=. ${{ github.event.inputs.packages }}
-            echo === 安装完成 ===
-            EOF
+            # 创建 install.bat
+            echo '@echo off' > offline_packages/install.bat
+            echo 'echo === 正在离线安装 pip ===' >> offline_packages/install.bat
+            echo 'python get-pip.py --no-index --find-links=.' >> offline_packages/install.bat
+            echo 'echo === 正在离线安装所需依赖包 ===' >> offline_packages/install.bat
+            echo "pip install --no-index --find-links=. ${{ github.event.inputs.packages }}" >> offline_packages/install.bat
+            echo 'echo === 安装完成 ===' >> offline_packages/install.bat
           fi
         shell: bash
 
